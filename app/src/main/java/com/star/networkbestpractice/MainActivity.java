@@ -148,6 +148,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }).start();
+
+        HttpUtils.sendHttpRequest(URL_ADDRESS_JSON, new HttpCallbackListener() {
+            @Override
+            public void onFinish(String response) {
+                Log.d("MainActivity", "HttpUtils " + response);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("MainActivity", "HttpUtils " + e);
+            }
+        });
     }
 
     private void parseXMLWithDom(InputStream inputStream) {
