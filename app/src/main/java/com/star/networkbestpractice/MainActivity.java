@@ -11,6 +11,12 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -22,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int SHOW_RESPONSE = 0;
 
 //    public static final String URL_ADDRESS = "http://www.baidu.com";
-    public static final String URL_ADDRESS = "http://192.168.1.5:8080/get_data/get_data.xml";
+    public static final String URL_ADDRESS_XML = "http://192.168.1.5:8080/get_data/get_data.xml";
+    public static final String URL_ADDRESS_JSON = "http://192.168.1.5:8080/get_data/get_data.json";
 
     public static final String GET_METHOD = "GET";
     public static final String POST_METHOD = "POST";
@@ -81,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        mWebView.loadUrl(URL_ADDRESS);
+        mWebView.loadUrl(URL_ADDRESS_JSON);
     }
 
     private void sendRequestWithHttpURLConnection() {
@@ -90,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 HttpURLConnection httpURLConnection = null;
                 try {
-                    URL url = new URL(URL_ADDRESS);
+                    URL url = new URL(URL_ADDRESS_JSON);
 
                     httpURLConnection = (HttpURLConnection) url.openConnection();
 
@@ -118,7 +126,12 @@ public class MainActivity extends AppCompatActivity {
 
                     mHandler.sendMessage(message);
 
+                    parseJSONWithJSONObject(response.toString());
+                    parseJSONWithGSON(response.toString());
+
                     httpURLConnection.disconnect();
+
+                    url = new URL(URL_ADDRESS_XML);
 
                     httpURLConnection = (HttpURLConnection) url.openConnection();
 
@@ -169,9 +182,9 @@ public class MainActivity extends AppCompatActivity {
 
                         String versionString = version.getFirstChild().getNodeValue();
 
-                        Log.d("MainActivity", "id is " + idString);
-                        Log.d("MainActivity", "name is " + nameString);
-                        Log.d("MainActivity", "version is " + versionString);
+                        Log.d("MainActivity", "ParseXMLWithDom id is " + idString);
+                        Log.d("MainActivity", "ParseXMLWithDom name is " + nameString);
+                        Log.d("MainActivity", "ParseXMLWithDom version is " + versionString);
                     }
                 }
             }
@@ -183,7 +196,39 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
 
+    private void parseJSONWithJSONObject(String jsonData) {
+        try {
+            JSONArray jsonArray = new JSONArray(jsonData);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String id = jsonObject.getString("id");
+                String name = jsonObject.getString("name");
+                String version = jsonObject.getString("version");
+
+                Log.d("MainActivity", "ParseJSONWithJSONObject id is " + id);
+                Log.d("MainActivity", "ParseJSONWithJSONObject name is " + name);
+                Log.d("MainActivity", "ParseJSONWithJSONObject version is " + version);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void parseJSONWithGSON(String jsonData) {
+        Gson gson = new Gson();
+
+        List<App> appList = gson.fromJson(jsonData, new TypeToken<List<App>>(){}.getType());
+
+        for (App app : appList) {
+            Log.d("MainActivity", "ParseJSONWithGSON id is " + app.getId());
+            Log.d("MainActivity", "ParseJSONWithGSON name is " + app.getName());
+            Log.d("MainActivity", "ParseJSONWithGSON version is " + app.getVersion());
+        }
     }
 
 }
