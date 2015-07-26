@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int SHOW_RESPONSE = 0;
 
 //    public static final String URL_ADDRESS = "http://www.baidu.com";
-    public static final String URL_ADDRESS_XML = "http://192.168.1.5:8080/get_data/get_data.xml";
-    public static final String URL_ADDRESS_JSON = "http://192.168.1.5:8080/get_data/get_data.json";
+    public static final String URL_ADDRESS_XML = "http://192.168.1.2:8080/get_data/get_data.xml";
+    public static final String URL_ADDRESS_JSON = "http://192.168.1.2:8080/get_data/get_data.json";
 
     public static final String GET_METHOD = "GET";
     public static final String POST_METHOD = "POST";

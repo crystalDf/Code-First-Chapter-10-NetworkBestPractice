@@ -1,6 +1,11 @@
 package com.star.networkbestpractice;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,6 +15,12 @@ import java.net.URL;
 public class HttpUtils {
 
     public static void sendHttpRequest(final String address, final HttpCallbackListener listener) {
+
+        if (!isNetworkAvailable()) {
+            Toast.makeText(MyApplication.getContext(), "network is unavailable",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
 
         new Thread(new Runnable() {
             @Override
@@ -55,6 +66,27 @@ public class HttpUtils {
             }
         }).start();
 
+    }
+
+    private static boolean isNetworkAvailable() {
+
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                MyApplication.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager == null) {
+            return false;
+        } else {
+            NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+            if (networkInfo != null) {
+                for (int i = 0; i < networkInfo.length; i++) {
+                    if (networkInfo[i].getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
 }
